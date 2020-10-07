@@ -152,6 +152,8 @@ public enum Command {
 
         options.addOption(NTLM, false, ArgDescriptions.NTLM);
 
+        options.addOption(ENV_VARIABLE, true, ArgDescriptions.ENV_VARIABLE);
+
         return options;
     }
 

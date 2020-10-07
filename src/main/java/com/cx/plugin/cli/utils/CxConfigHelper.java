@@ -24,6 +24,9 @@ import java.io.FileReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import static com.cx.plugin.cli.constants.Parameters.*;
 import static com.cx.plugin.cli.utils.PropertiesManager.*;
@@ -176,6 +179,10 @@ public final class CxConfigHelper {
         String webAppUrl = normalizeUrl(getRequiredParam(commandLine, SCA_WEB_APP_URL, KEY_SCA_WEB_APP_URL));
         sca.setWebAppUrl(webAppUrl);
 
+        String envVariables = getRequiredParam(commandLine, ENV_VARIABLE, "");
+        sca.setEnvVariables(convertStringToKeyValueMap(envVariables));
+
+
         sca.setUsername(getRequiredParam(commandLine, SCA_USERNAME, null));
         sca.setPassword(getRequiredParam(commandLine, SCA_PASSWORD, null));
         sca.setTenant(getRequiredParam(commandLine, SCA_ACCOUNT, null));
@@ -200,6 +207,25 @@ public final class CxConfigHelper {
         }
 
         scanConfig.setAstScaConfig(sca);
+    }
+
+    private HashMap<String, String> convertStringToKeyValueMap(String envString) {
+
+        HashMap<String, String> envMap = new HashMap<>();
+        //"Key1=Val1;Key2=Val2"
+        String trimmedString = envString.replace("\"","");
+        List<String> envlist = Arrays.asList(trimmedString.split(";"));
+
+        for( String variable : envlist)
+        {
+            String[] splitFromEqual = variable.split("=");
+            String key = splitFromEqual[0];
+            String value = splitFromEqual[1];
+
+            envMap.put(key, value);
+        }
+        return envMap;
+
     }
 
     private void setSharedDependencyScanConfig(CxScanConfig scanConfig) {
